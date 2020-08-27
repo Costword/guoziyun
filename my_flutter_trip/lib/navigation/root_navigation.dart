@@ -41,54 +41,25 @@ class _rootNavigationPageState extends State<rootNavigationPage> {
             });
           },
           items:[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: _defoutColor,
-              ),
-              activeIcon: Icon(
-                Icons.home,
-                color: _selectColor,
-              ),
-              title: Text('登录',style: TextStyle(color: _currentPage==0?_selectColor:_defoutColor),
-              ),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                  Icons.home,
-                  color: _defoutColor,
-              ),
-              activeIcon: Icon(
-                Icons.home,
-                color: _selectColor,
-              ),
-              title: Text('首页',style: TextStyle(color: _currentPage==1?_selectColor:_defoutColor),
-              ),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: _defoutColor,
-              ),
-              activeIcon: Icon(
-                Icons.search,
-                color: _selectColor,
-              ),
-              title: Text('搜索',style: TextStyle(color: _currentPage==2?_selectColor:_defoutColor),
-              ),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-                color: _defoutColor,
-              ),
-              activeIcon: Icon(
-                Icons.person,
-                color: _selectColor,
-              ),
-              title: Text('个人中心',style: TextStyle(color:_currentPage==3?_selectColor:_defoutColor),),
-            )
+            _tableBarItem('首页',Icons.home,0),
+            _tableBarItem('布局',Icons.terrain,1),
+            _tableBarItem('搜索',Icons.search,2),
+            _tableBarItem('我的',Icons.person,3),
           ]
+      ),
+    );
+  }
+  _tableBarItem(String title,IconData myicon,int index){
+
+    return  BottomNavigationBarItem(
+      icon: Icon(
+        myicon,
+        color: _defoutColor,
+      ),
+      activeIcon: Icon(myicon,
+        color: _selectColor,
+      ),
+      title: Text(title,style: TextStyle(color: _currentPage==index?_selectColor:_defoutColor),
       ),
     );
   }

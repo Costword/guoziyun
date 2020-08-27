@@ -22,18 +22,19 @@ class tripHomePage extends StatefulWidget {
 }
 
 class _tripHomePageState extends State<tripHomePage> {
-
   String _resultStr = '';
   double _appBarAlpha = 0;
   ScrollController _scrollController = ScrollController();
-  List <homeCommonModel>_bannerList = [];
-  List <homeCommonModel>_loacalNavList = [];
-  List <homeCommonModel>_subNavList = [];
+  SwiperController _swiperController = SwiperController();
+  List<homeCommonModel> _bannerList = [];
+  List<homeCommonModel> _loacalNavList = [];
+  List<homeCommonModel> _subNavList = [];
   homeModel _homemodel;
   homeGridNavModel _gridNavModel;
   homeSaleBoxModel _boxModel;
-  Future loadData()async{
-    homeDao.fetchHome().then((homeModel result){
+
+  Future loadData() async {
+    homeDao.fetchHome().then((homeModel result) {
       setState(() {
         _homemodel = result;
         _bannerList = _homemodel.bannerList;
@@ -50,10 +51,11 @@ class _tripHomePageState extends State<tripHomePage> {
   void initState() {
     // TODO: implement initState
     _scrollController.addListener(() {
-      if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent){
-      }
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {}
     });
     loadData();
+    _swiperController.startAutoplay();
     super.initState();
   }
 
@@ -61,8 +63,11 @@ class _tripHomePageState extends State<tripHomePage> {
   void dispose() {
     // TODO: implement dispose
     _scrollController.dispose();
+    _swiperController.stopAutoplay();
+    _swiperController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,40 +75,41 @@ class _tripHomePageState extends State<tripHomePage> {
       body: Stack(
         children: <Widget>[
           MediaQuery.removePadding(
-              removeTop: true,
-              context: context,
-              child: NotificationListener(
-                onNotification:(scrollnotification){
-                  if(scrollnotification is ScrollUpdateNotification && scrollnotification.depth==0)
-                    {
-                      _onscroll(scrollnotification.metrics.pixels);
-                    }
-                } ,
-                child: RefreshIndicator(
-                  onRefresh: loadData,
-                  child: _listView,
-                ),
+            removeTop: true,
+            context: context,
+            child: NotificationListener(
+              onNotification: (scrollnotification) {
+                if (scrollnotification is ScrollUpdateNotification &&
+                    scrollnotification.depth == 0) {
+                  _onscroll(scrollnotification.metrics.pixels);
+                }
+              },
+              child: RefreshIndicator(
+                onRefresh: loadData,
+                child: _listView,
               ),
+            ),
           ),
           _navgationBar,
         ],
       ),
     );
   }
-   _onscroll(double scrollLength) {
-     double alpha = 0;
-     alpha = scrollLength / NAVGATIONBAR_OFFSECT;
-     if (alpha < 0) {
-       alpha = 0;
-     } else if (alpha > 1) {
-       alpha = 1;
-     }
-     setState(() {
-       _appBarAlpha = alpha;
-     });
+
+  _onscroll(double scrollLength) {
+    double alpha = 0;
+    alpha = scrollLength / NAVGATIONBAR_OFFSECT;
+    if (alpha < 0) {
+      alpha = 0;
+    } else if (alpha > 1) {
+      alpha = 1;
+    }
+    setState(() {
+      _appBarAlpha = alpha;
+    });
   }
 
-  Widget get _listView{
+  Widget get _listView {
     return ListView(
       children: <Widget>[
         Container(
@@ -111,16 +117,20 @@ class _tripHomePageState extends State<tripHomePage> {
           height: 220,
           child: Swiper(
             itemCount: _bannerList.length,
-            autoplay: true,
-            itemBuilder: (BuildContext context, int index){
+            autoplay: false,
+            loop: false,
+            itemBuilder: (BuildContext context, int index) {
               homeCommonModel bannerModel = _bannerList[index];
               return GestureDetector(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder:(context)=>webView(
-                    url: bannerModel.url,
-                    hideAppBar: bannerModel.hideAppBar,
-                    statusBarColor: bannerModel.statusBarColor,
-                  )));
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => webView(
+                                url: bannerModel.url,
+                                hideAppBar: bannerModel.hideAppBar,
+                                statusBarColor: bannerModel.statusBarColor,
+                              )));
                 },
                 child: Image.network(
                   bannerModel.icon,
@@ -132,23 +142,28 @@ class _tripHomePageState extends State<tripHomePage> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.fromLTRB(7,4, 7, 4),
-          child: localNav(localnavList:_loacalNavList),
+          padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+          child: localNav(localnavList: _loacalNavList),
         ),
-        Padding(padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
-          child: GridNav(gradeModel:_gridNavModel),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+          child: GridNav(gradeModel: _gridNavModel),
         ),
         Padding(
           padding: EdgeInsets.fromLTRB(7, 4, 7, 0),
-          child: subNav(subNavList: _subNavList,),
+          child: subNav(
+            subNavList: _subNavList,
+          ),
         ),
-        Padding(padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
           child: saleBoxPage(saleBox: _boxModel),
         ),
       ],
     );
   }
-  Widget get _navgationBar{
+
+  Widget get _navgationBar {
     return Opacity(
       opacity: _appBarAlpha,
       child: Container(
@@ -156,10 +171,8 @@ class _tripHomePageState extends State<tripHomePage> {
         height: 88,
         alignment: Alignment.center,
         padding: EdgeInsets.only(top: 20),
-        child: Text('首页'),
+        child: Text('复杂页面约束'),
       ),
     );
   }
 }
-
-

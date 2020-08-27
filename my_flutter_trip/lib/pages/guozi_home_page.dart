@@ -11,6 +11,7 @@ import 'package:my_flutter_trip/model/guozi_home_recstudy_model.dart';
 import 'package:my_flutter_trip/network/m_networking.dart';
 import 'package:my_flutter_trip/urls/my_urls.dart';
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 
 const NAVGATIONBAR_OFFSECT = 100;
 
@@ -28,6 +29,7 @@ class _guoziHomePageState extends State<guoziHomePage> {
   Color currentBaseColor = Color(int.parse('0xfffafafa'));
   double _appBarAlpha = 0;
   ScrollController _scrollController = ScrollController();
+  SwiperController _swiperController = SwiperController();
   List<String> _categoryNameList = ['毛笔', '硬笔', '碑帖', '语文', '诗词'];
   guozirecstudyModel _recstudyModel;
   List<guoziHomeItemModel> _maobiList = [];
@@ -100,6 +102,7 @@ class _guoziHomePageState extends State<guoziHomePage> {
           _scrollController.position.maxScrollExtent) {}
     });
     _loadMianData();
+    _swiperController.startAutoplay();
     super.initState();
   }
 
@@ -107,6 +110,8 @@ class _guoziHomePageState extends State<guoziHomePage> {
   void dispose() {
     // TODO: implement dispose
     _scrollController.dispose();
+    _swiperController.stopAutoplay();
+    _swiperController.dispose();
     super.dispose();
   }
 
@@ -197,7 +202,9 @@ class _guoziHomePageState extends State<guoziHomePage> {
               clipBehavior: Clip.antiAlias,
               child: Swiper(
                 itemCount: _bannerModelList.length,
-                autoplay: true,
+                autoplay: false,
+                loop: false,
+                controller: _swiperController,
                 autoplayDelay: 5000,
                 onIndexChanged: (index) {
                   setState(() {
@@ -265,7 +272,7 @@ class _guoziHomePageState extends State<guoziHomePage> {
               children: <Widget>[
                 Row(
                   children: _beitieItems(),
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 ),
                 Row(
                   children: _ywItems(),
@@ -373,6 +380,7 @@ class _guoziHomePageState extends State<guoziHomePage> {
         ),
         Container(
           margin: EdgeInsets.only(top: 5),
+          alignment: Alignment.topCenter,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: noritems,
@@ -384,10 +392,11 @@ class _guoziHomePageState extends State<guoziHomePage> {
 
   _normalitem(guoziHomeItemModel itemModel) {
     return Container(
+      alignment: Alignment.topCenter,
       child: Column(
         children: <Widget>[
           Container(
-            width: 170,
+            width: (MediaQuery.of(context).size.width-60)/2,
             height: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
@@ -397,7 +406,7 @@ class _guoziHomePageState extends State<guoziHomePage> {
           ),
           Container(
             padding: EdgeInsets.only(left: 5, top: 5),
-            width: 170,
+            width: (MediaQuery.of(context).size.width-60)/2,
             child: Row(
               children: <Widget>[
                 Text(
@@ -413,13 +422,15 @@ class _guoziHomePageState extends State<guoziHomePage> {
           Container(
             margin: EdgeInsets.only(top: 5),
             padding: EdgeInsets.only(left: 5, right: 5),
-            width: 170,
+            width: (MediaQuery.of(context).size.width-60)/2,
             child: Text(
               itemModel.describe,
+              maxLines: 1,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
-                  fontWeight: FontWeight.w300),
+                  fontWeight: FontWeight.w300,
+              ),
             ),
           ),
         ],
@@ -440,12 +451,17 @@ class _guoziHomePageState extends State<guoziHomePage> {
     return Expanded(
       flex: 1,
       child: Container(
+        padding: EdgeInsets.all(3),
         decoration: BoxDecoration(),
-        child: Image.network(
-          insmodel.source_url,
+        width: 80,
+        height: 80,
+        child:
+        CachedNetworkImage(
           width: 80,
           height: 80,
-          fit: BoxFit.scaleDown,
+          fit: BoxFit.fill,
+          imageUrl: insmodel.source_url,
+          placeholder: (context,url)=>Image.asset('images/category_placeholder.png'),
         ),
       ),
     );
@@ -510,16 +526,18 @@ class _guoziHomePageState extends State<guoziHomePage> {
         borderRadius: BorderRadius.circular(6),
         clipBehavior: Clip.antiAlias,
         child: Container(
-          width: 170,
+          width: (MediaQuery.of(context).size.width-60)/2,
           decoration: BoxDecoration(color: MAIN_BACKGROUND_COLOR),
           child: Column(
             children: <Widget>[
               Container(
-                child: Image.network(
-                  lectureModel.imgurl,
+                child:
+                CachedNetworkImage(
+                  fit: BoxFit.fill,
+                  imageUrl: lectureModel.imgurl,
                   height: 100,
                   alignment: AlignmentDirectional.topEnd,
-                  fit: BoxFit.fill,
+                  placeholder: (context, url) => Image.asset('images/category_placeholder.png'),
                 ),
               ),
               Container(
